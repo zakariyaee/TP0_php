@@ -33,98 +33,101 @@
             $body = $_POST["messageBody"];
 
             sendEmailToAll($subject, $body);
-        }
-        elseif(isset($_POST["saveEmail"]) ){
+
+            $fileUploaded = true ;
+        }elseif(isset($_POST["saveEmail"]) ){
             $email = $_POST["email"];
             if(preg_match("/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/",$email)){
-                $file = fopen(__DIR__ . "/uploads/Emails.txt", "a");
-                fwrite($file, $email."\n");
-                fclose($file);
-                createFiles();
+    //                $file = fopen(__DIR__ . "/uploads/Emails.txt", "a");
+    //                fwrite($file, "\n".$email."\n");
+    //                fclose($file);
+    //                createFiles();
+                addEmail($email);
+
             }
             else{
                 echo "<script>alert('Invalid email format. Please enter a valid email.');</script>";
+            }
+            $fileUploaded = true;
+
+        }elseif(isset($_POST["enregistrer"])){
+            $enregistrer = true;
+
         }
     }
-        elseif(isset($_POST["enregistrer"])){
-            $enregistrer = true;  
-
-        }
-        }
 
 
-?>
+    ?>
 
-<!DOCTYPE html>
-<html >
+    <!DOCTYPE html>
+    <html >
     <head>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     </head>
 
     <body>
-            <?php
-                if (!$fileUploaded && !$sendMail && !$enregistrer) {
-            ?>
-                    <form method="post" enctype="multipart/form-data">
-                        <h3> Upload your file : </h3>
-                        <input name="file" type="file" value="Chose a file"> <br><br>
-                        <button type="submit" name = "upload" >Upload</button>
-                    </form>
-            <?php
-                }
-            ?>
+    <?php
+    if (!$fileUploaded && !$sendMail && !$enregistrer) {
+        ?>
+        <form method="post" enctype="multipart/form-data">
+            <h3> Upload your file : </h3>
+            <input name="file" type="file" value="Chose a file"> <br><br>
+            <button type="submit" name = "upload" >Upload</button>
+        </form>
+        <?php
+    }
+    ?>
 
-            <?php
-                if ($fileUploaded && !$sendMail) {
-                    echo '<h3>Send a message to valid emails by completing the formulaire  : </h3>';
-            ?>
-            <form method="post">
-                <button name = "sendMail"> Show formulaire </button><br>
-            
-                <button name = "enregistrer"> enregistrer l'email </button><br>
-            </form>
+    <?php
+    if ($fileUploaded && !$sendMail) {
+        echo '<h3>Send a message to valid emails by completing the formulaire  : </h3>';
+        ?>
+        <form method="post">
+            <button name = "sendMail"> Show formulaire </button><br>
+            <button name = "enregistrer"> enregistrer l'email </button><br>
+        </form>
 
-            <?php
-                    afficheDownloadeButton("The file contain the valid e`mails : ","uploads\EmailsV.txt");
-                    afficheDownloadeButton("The file contain the non valid emails : ","uploads\AdressesNonValides.txt");
-                    afficheDownloadeButton("The file contain the valid sorted emails : ","uploads\EmailsT.txt");
-                    echo '<h3>    --- THE DOMAINES ---    </h3>';
-                        $key = array_keys($domainEmails);
-                        foreach ($key as $domaine){
-                            afficheDownloadeButton("The file contain the domaine {$domaine}","uploads/Domaine_Emails/{$domaine}.txt");
-                        }
-                }
-                if($sendMail){
-            ?>
-                    <form method="post">
-                        <h3>Send email message to the valid email in the text file </h3>
-<!--                        <label>The email of the sender : </label>-->
-<!--                        <input type="email" required="required" placeholder="example@gmail.com" name="senderEmail"><br>-->
-                        <label>The message subject : </label>
-                        <input required="required"  name="subject"><br>
-                        <label>The message body :</label>
-                        <textarea  required name="messageBody"></textarea><br>
-                        <button name = 'sendEmailToAll'>Send</button>
-                    </form>
+        <?php
+        afficheDownloadeButton("The file contain the valid e`mails : ","uploads\EmailsV.txt");
+        afficheDownloadeButton("The file contain the non valid emails : ","uploads\AdressesNonValides.txt");
+        afficheDownloadeButton("The file contain the valid sorted emails : ","uploads\EmailsT.txt");
+        echo '<h3>    --- THE DOMAINES ---    </h3>';
+        $key = array_keys($domainEmails);
+        foreach ($key as $domaine){
+            afficheDownloadeButton("The file contain the domaine {$domaine}","uploads/Domaine_Emails/{$domaine}.txt");
+        }
+    }
+    if($sendMail){
+        ?>
+        <form method="post">
+            <h3>Send email message to the valid email in the text file </h3>
+            <!--                        <label>The email of the sender : </label>-->
+            <!--                        <input type="email" required="required" placeholder="example@gmail.com" name="senderEmail"><br>-->
+            <label>The message subject : </label>
+            <input required="required"  name="subject"><br>
+            <label>The message body :</label>
+            <textarea  required name="messageBody"></textarea><br>
+            <button name = 'sendEmailToAll'>Send</button>
+        </form>
 
-            <?php
-                }
-            ?>
-            <?php
-                if($enregistrer){ 
-                    ?>
-                    <h3>Enregistrer un email</h3>
-                   <form method="post" action="part2.php">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                    <button type="submit" name="saveEmail">Enregistrer</button>
-               <?php }
-            ?>
+        <?php
+    }
+    ?>
+    <?php
+    if($enregistrer){
+    ?>
+    <h3>Enregistrer un email</h3>
+    <form method="post" action="part2.php">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <button type="submit" name="saveEmail">Enregistrer</button>
+        <?php }
+        ?>
     </body>
-</html>
+    </html>
 
-<?php
-// functions
+    <?php
+    // functions
     function createFiles(){
 
         global $domainEmails ;
@@ -201,10 +204,10 @@
     function sendEmailToAll($subject,$message){
         setUpPHPMailer();
         $file = fopen(__DIR__.'/uploads/EmailsT.txt',"r");
-//        while (!feof($file)){
-//            $email=trim(fgets($file));
-//            sendEmail($email,$subject,$message);
-//        }
+    //        while (!feof($file)){
+    //            $email=trim(fgets($file));
+    //            sendEmail($email,$subject,$message);
+    //        }
         sendEmail("aminebiyadi4@gmail.com",$subject,$message);
 
         fclose($file);
@@ -221,4 +224,59 @@
         $mail->Port = 465;
         $mail->setFrom("hkkh2655@gmail.com");
     }
+
+    function checkIfEmailExists($email) : bool {
+        $dir = __DIR__ . "/uploads/Domaine_Emails/" ;
+        $domainName = substr($email , strpos($email,"@")+1,strlen($email));
+        if(file_exists($dir.$domainName.".txt")){
+            if(!($file = fopen($dir.$domainName.".txt","r"))){
+                return false;
+            }else{
+                while(!feof($file)){
+                    $line = fgets($file);
+                    $line = trim($line);
+                    if(strcasecmp($line,$email) == 0){
+                        fclose($file);
+                        return true;
+                    }
+                }
+                fclose($file);
+                return false;
+            }
+        }else{
+            $file= fopen($dir.$domainName.".txt","w");
+            fclose($file);
+            return false;
+        }
+    }
+
+    function addEmail($email){
+        $dir = __DIR__ . "/uploads/Domaine_Emails/" ;
+        $domainName = substr($email , strpos($email,"@")+1,strlen($email));
+        if(!checkIfEmailExists($email)){
+            $file = fopen($dir.$domainName.".txt","a");
+            fwrite($file,$email);
+            fclose($file);
+            $file= fopen(__DIR__ . "/uploads/EmailsV.txt","a+");
+            fwrite($file,$email);
+            fclose($file);
+
+            $file= fopen(__DIR__ . "/uploads/EmailsT.txt","r");
+            $sortedEmails = [];
+            $sortedEmails[] = $email ;
+            while(!feof($file)){
+                $line = fgets($file);
+                $line = trim($line);
+                $sortedEmails[] = $line ;
+            }
+            sort($sortedEmails);
+            fclose($file);
+            $file = fopen(__DIR__ . "/uploads/EmailsT.txt","w");
+            foreach($sortedEmails as $mail){
+                fwrite($file,$mail."\n");
+            }
+            fclose($file);
+        }
+    }
+
 ?>
