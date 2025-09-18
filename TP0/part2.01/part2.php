@@ -96,7 +96,10 @@
             $domaines = [] ;
             $file = fopen(__DIR__ . "/uploads/Domaine.txt","r");
             while(!feof($file)){
-                $domaines[] = trim(fgets($file));
+                $tmp = trim(fgets($file)) ;
+                if($tmp != ""){
+                    $domaines[] = $tmp;
+                }
             }
             fclose($file);
             foreach ($domaines as $domaine){
@@ -264,7 +267,7 @@
             $file= fopen($dir.$domainName.".txt","w");
             fclose($file);
             $file = fopen(__DIR__ . "/uploads/Domaine.txt","a");
-            fwrite($file,$email."\n");
+            fwrite($file,substr($email , strpos($email,"@")+1,strlen($email))."\n");
             fclose($file);
             return false;
         }
