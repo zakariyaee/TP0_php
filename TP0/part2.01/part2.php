@@ -92,10 +92,23 @@
         afficheDownloadeButton("The file contain the non valid emails : ","uploads\AdressesNonValides.txt");
         afficheDownloadeButton("The file contain the valid sorted emails : ","uploads\EmailsT.txt");
         echo '<h3>    --- THE DOMAINES ---    </h3>';
-        $key = array_keys($domainEmails);
-        foreach ($key as $domaine){
-            afficheDownloadeButton("The file contain the domaine {$domaine}","uploads/Domaine_Emails/{$domaine}.txt");
+        if (empty($domainEmails)){
+            $domaines = [] ;
+            $file = fopen(__DIR__ . "/uploads/Domaine.txt","r");
+            while(!feof($file)){
+                $domaines[] = trim(fgets($file));
+            }
+            fclose($file);
+            foreach ($domaines as $domaine){
+                afficheDownloadeButton("The file contain the domaine {$domaine}","uploads/Domaine_Emails/{$domaine}.txt");
+            }
+        }else{
+            $key = array_keys($domainEmails);
+            foreach ($key as $domaine){
+                afficheDownloadeButton("The file contain the domaine {$domaine}","uploads/Domaine_Emails/{$domaine}.txt");
+            }
         }
+
     }
     if($sendMail){
         ?>
@@ -134,6 +147,7 @@
         global $validateEmails ;
 
         $DIRECTORY = __DIR__ . "/uploads/" ;
+        $FILE_TO_HOLDE_DOMAINES_NAMES = $DIRECTORY . "Domaine.txt";
         $VALIDATE_EMAIL_FILE_NAME = $DIRECTORY . "EmailsV.txt";
         $SORTED_VALIDATE_EMAIL_FILE_NAME = $DIRECTORY . "EmailsT.txt";
         $NON_VALIDATE_EMAIL_FILE_NAME = $DIRECTORY . "AdressesNonValides.txt";
@@ -174,6 +188,9 @@
         foreach( $domainEmails as $domainName => $emails){
             writeEmailsToFile($DIRECTORY .'Domaine_Emails/'. $domainName.".txt", $emails);
         }
+
+        writeEmailsToFile($FILE_TO_HOLDE_DOMAINES_NAMES, array_keys($domainEmails));
+
     }
     function writeEmailsToFile( $fileName , $emails){
         $file = fopen($fileName , "w");
@@ -245,6 +262,9 @@
             }
         }else{
             $file= fopen($dir.$domainName.".txt","w");
+            fclose($file);
+            $file = fopen(__DIR__ . "/uploads/Domaine.txt","a");
+            fwrite($file,$email."\n");
             fclose($file);
             return false;
         }
