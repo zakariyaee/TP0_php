@@ -88,7 +88,7 @@
         </form>
 
         <?php
-        afficheDownloadeButton("The file contain the valid e`mails : ","uploads\EmailsV.txt");
+        afficheDownloadeButton("The file contain the valid emails : ","uploads\EmailsV.txt");
         afficheDownloadeButton("The file contain the non valid emails : ","uploads\AdressesNonValides.txt");
         afficheDownloadeButton("The file contain the valid sorted emails : ","uploads\EmailsT.txt");
         echo '<h3>    --- THE DOMAINES ---    </h3>';
@@ -195,6 +195,7 @@
         writeEmailsToFile($FILE_TO_HOLDE_DOMAINES_NAMES, array_keys($domainEmails));
 
     }
+    
     function writeEmailsToFile( $fileName , $emails){
         $file = fopen($fileName , "w");
         foreach ( $emails as $email){
@@ -221,6 +222,7 @@
             echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
     }
+
     function sendEmailToAll($subject,$message){
         setUpPHPMailer();
         $file = fopen(__DIR__.'/uploads/EmailsT.txt',"r");
@@ -232,6 +234,7 @@
 
         fclose($file);
     }
+
     function setUpPHPMailer(){
         global $mail;
         $mail = new PHPMailer(true);
